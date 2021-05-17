@@ -3,7 +3,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const pageList = document.querySelector(".js-pages");
   const header = document.querySelector(".js-header");
 
+  // Copy  info from Data Array into results array
+  let results = [...data];
+
   /* Helper Functions */
+
   const generateStudentHTML = (obj) => {
     return ` 
   <li class="student-item cf">
@@ -25,8 +29,20 @@ document.addEventListener("DOMContentLoaded", () => {
       </li>`;
   };
 
+  // Searchs through Data Array for matches and updates results array
+  const searchFunction = (targ) => {
+    let search = targ.value.trim().toLowerCase();
+
+    results = data.filter((item) => {
+      let firstname = item.name.first.toLowerCase();
+      let lastName = item.name.last.toLowerCase();
+      return firstname.includes(search) || lastName.includes(search);
+    });
+  };
+
   /*Display Functions*/
 
+  // Shows and updates students  onscreen
   const showPage = (list, page, numItems) => {
     let start = page * numItems - numItems;
     let end = page * numItems;
@@ -40,11 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
 
-  /*
-Create the `addPagination` function
-This function will create and insert/append the elements needed for the pagination buttons
-*/
-
+  // This function  creates and appends the elements needed for the pagination buttons
   const addPageBtns = (list, numItems) => {
     const pageAmt = Math.ceil(list.length / numItems);
     pageList.innerHTML = "";
@@ -56,6 +68,8 @@ This function will create and insert/append the elements needed for the paginati
     const firstBtn = pageList.firstElementChild.firstElementChild;
     firstBtn.className = "active";
   };
+
+  // Generates SearchBar HTML and adds it to the page
 
   const addSearchBar = () => {
     let search = document.createElement("label");
@@ -70,43 +84,40 @@ This function will create and insert/append the elements needed for the paginati
   };
 
   // Call display functions
-  showPage(data, 1, 9);
-  addPageBtns(data, 9);
+
+  showPage(results, 1, 9);
+  addPageBtns(results, 9);
   addSearchBar();
 
   /* Event Handlers */
 
+  // Changes the page results when user clicks a pagination button
   const handlePageChange = (evt) => {
     let targ = evt.target;
 
     if (targ.tagName === "BUTTON") {
       const activeBtn = document.querySelector(".active");
       let pageNum = parseInt(targ.textContent);
-      showPage(data, pageNum, 9);
-      active.classList.remove("active");
+      showPage(results, pageNum, 9);
+      activeBtn.classList.remove("active");
       targ.className = "active";
     }
   };
+
+  // Search funtionality
 
   const handleSearch = (evt) => {
     let targ = evt.target;
 
     if (targ.id === "search") {
-      let search = targ.value.trim().toLowerCase();
-
-      const results = data.filter((item) => {
-        let firstname = item.name.first.toLowerCase();
-        let lastName = item.name.last.toLowerCase();
-        return firstname.includes(search) || lastName.includes(search);
-      });
-      console.log(results);
       pageList.innerHTML = "";
+      searchFunction(targ);
+
       if (results.length) {
         showPage(results, 1, 9);
         addPageBtns(results, 9);
       } else {
         const studentList = document.querySelector(".js-students");
-
         studentList.innerHTML = `
         <li class="student-item cf">
           <div class="student-details">
