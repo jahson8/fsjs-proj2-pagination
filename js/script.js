@@ -78,8 +78,9 @@ This function will create and insert/append the elements needed for the paginati
 
   const handlePageChange = (evt) => {
     let targ = evt.target;
-    const active = document.querySelector(".active");
+
     if (targ.tagName === "BUTTON") {
+      const activeBtn = document.querySelector(".active");
       let pageNum = parseInt(targ.textContent);
       showPage(data, pageNum, 9);
       active.classList.remove("active");
